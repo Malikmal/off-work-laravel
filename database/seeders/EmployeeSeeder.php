@@ -14,7 +14,8 @@ class EmployeeSeeder extends Seeder
     public function run()
     {
         //
-        $userEmployes = \App\Models\User::factory(100)->create();
+        \App\Models\User::factory(100)->create();
+        $userEmployes = \App\Models\User::where('role_id', \App\Models\Role::KARYAWAN)->get();
 
         // $userEmployes->map(function($employe) {
         //     return [
