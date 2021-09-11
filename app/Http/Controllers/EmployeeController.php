@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\EmployeeDataTable;
+use App\Http\Requests\EmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class EmployeeController extends Controller
 {
@@ -12,9 +15,10 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(EmployeeDataTable $employeDataTable)
     {
         //
+        return $employeDataTable->render('employee.index');
     }
 
     /**
@@ -25,6 +29,7 @@ class EmployeeController extends Controller
     public function create()
     {
         //
+        return view('employee.create');
     }
 
     /**
@@ -33,9 +38,14 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmployeeRequest $request)
     {
         //
+        $employee = Employee::create($request->all());
+        
+        Session::flash('status', 'employe with name '.$employee->name.' has created');
+
+        return redirect()->route('employees.index'); 
     }
 
     /**
@@ -58,6 +68,7 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         //
+        return view('employee.edit', compact('employee'));
     }
 
     /**
@@ -70,6 +81,11 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         //
+        $employee->updateOrFail($request->all());
+
+        Session::flash('status', 'employe with name '.$employee->name.' has updated');
+        
+        return redirect()->route('employees.index');
     }
 
     /**
@@ -81,5 +97,10 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         //
+        $employee->delete();
+
+        Session::flash('status', 'empoye with name '.$employee->name.' has deleted');
+        
+        return redirect()->route('employees.index');
     }
 }

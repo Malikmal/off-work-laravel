@@ -10,7 +10,9 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    <script src="{{ mix('js/app.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}" defer></script>
+    @stack('scripts')
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -52,6 +54,19 @@
                                 </li>
                             @endif
                         @else
+                            @if(auth()->user()->role_id != \App\Models\Role::KARYAWAN)
+                                @if (auth()->user()->role_id == \App\Models\Role::SUPERADMIN)
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">Users</a>
+                                    </li>
+                                @endif
+                                <li class="nav-item">
+                                    <a href="{{ route('employees.index') }}" class="nav-link">Employees</a>
+                                </li>
+                            @endif
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">Off Works</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
@@ -59,8 +74,8 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    onclick="event.preventDefault();
+                                                    document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 
