@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\OffWorkDataTable;
+use App\Http\Requests\OffWorkRequest;
 use App\Models\OffWork;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class OffWorkController extends Controller
 {
@@ -12,9 +15,10 @@ class OffWorkController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(OffWorkDataTable $offWorkDataTable)
     {
         //
+        return $offWorkDataTable->render('off-work.index');
     }
 
     /**
@@ -25,6 +29,9 @@ class OffWorkController extends Controller
     public function create()
     {
         //
+        return view('off-work.create',[
+            'employes' => \App\Models\Employee::where('off_work_total', '!=', 0)->get(),
+        ]);
     }
 
     /**
@@ -33,9 +40,21 @@ class OffWorkController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(OffWorkRequest $request)
     {
-        //
+        ////
+        // $dates = explode(' - ', $request->date_range);
+        // $request['date_start'] = Carbon::parse($dates[0]);
+        // $request['date_end'] = Carbon::parse($dates[1]);
+        if($request->accepted_at)
+        $request['accepted_at'] = now();
+
+
+        OffWork::create($request->all());
+
+        Session::flash('status', 'Off work has created');
+
+        return redirect()->route('off-works.index');
     }
 
     /**
@@ -58,6 +77,10 @@ class OffWorkController extends Controller
     public function edit(OffWork $offWork)
     {
         //
+        return view('off-work.edit', [
+            'offWork' => $offWork,
+            'employes' => \App\Models\Employee::all(),
+        ]);
     }
 
     /**
@@ -67,9 +90,25 @@ class OffWorkController extends Controller
      * @param  \App\Models\OffWork  $offWork
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, OffWork $offWork)
+    public function update(OffWorkRequest $request, OffWork $offWork)
     {
-        //
+        ////
+        // $dates = explode(' - ', $request->date_range);
+        // $request['date_start'] = Carbon::parse($dates[0]);
+        // $request['date_end'] = Carbon::parse($dates[1]);
+        // $request['accepted_at'] = $request->accepted_at ? now() : NULL; 
+        if($request->accepted_at)
+            $request['accepted_at'] = now();
+        else{
+            $request['accepted_at'] = NULL;
+            $request['accepted_by'] = NULL;
+        }
+
+        $offWork->updateOrFail($request->all());
+
+        Session::flash('status', 'off work has updated');
+
+        return redirect()->route('off-works.index');
     }
 
     /**
@@ -81,5 +120,10 @@ class OffWorkController extends Controller
     public function destroy(OffWork $offWork)
     {
         //
+        $offWork->delete();
+
+        Session::flash('status', 'off work has deleted');
+
+        return redirect()->route('off-works.index');
     }
 }
