@@ -29,6 +29,7 @@ class OffWorkDataTable extends DataTable
             <form method="POST" action="{{route("off-works.destroy", $id)}}" class="d-flex d-inline" >
                 @csrf
                 @method("DELETE")
+                <a href="{{ route("off-works.accept", $id) }}" class="btn btn-sm @if($accepted_at) btn-secondary @else btn-primary @endif mx-1" title="accepted by {{$acceptor ?? "no ones"}} "><i class="fa fa-check"></i></a>
                 @if(auth()->user()->role_id != \App\Models\Role::KARYAWAN )
                 <a href="{{ route("off-works.edit", $id) }}" class="btn btn-sm btn-warning mx-1"><i class="fa fa-edit"></i></a>
                 <input name="id" value="{{$id}}" type="hidden"/>

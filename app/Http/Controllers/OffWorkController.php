@@ -126,4 +126,30 @@ class OffWorkController extends Controller
 
         return redirect()->route('off-works.index');
     }
+
+    
+    /**
+     * Accept the specified resource from storage.
+     *
+     * @param  \App\Models\OffWork  $offWork
+     * @return \Illuminate\Http\Response
+     */
+    public function accept(OffWork $offWork)
+    {
+        //
+        if(auth()->user()->role_id == \App\Models\Role::KARYAWAN)
+        {
+            Session::flash('status', 'Failed You don\'t have persmission');
+            return redirect()->route('off-works.index');
+        }
+
+        $offWork->updateOrFail([
+            'accepted_at' => now(),
+            'accepted_by' => auth()->user()->id,
+        ]);
+
+        Session::flash('status', 'off work has accepted');
+
+        return redirect()->route('off-works.index');
+    }
 }

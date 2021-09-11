@@ -25,6 +25,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth'])->group(function () {
     Route::resource('/employees', App\Http\Controllers\EmployeeController::class);
 
+    Route::get('/off-works/accept/{off_work}', [App\Http\Controllers\OffWorkController::class, 'accept'])->name('off-works.accept');
     Route::resource('/off-works', App\Http\Controllers\OffWorkController::class);
 
 });
